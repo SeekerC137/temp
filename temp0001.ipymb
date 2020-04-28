@@ -1,0 +1,5 @@
+import pandas as pandas
+
+df = pd.read_csv("temp0001.txt")
+
+df
