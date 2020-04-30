@@ -1,7 +1,1 @@
-wget==3.2
 pandas==1.0.3
-numpy==1.18.1
-altair==4.1.0
-vega==3.2.0
-vega_datasets==0.8.0
-watermark==2.0.2
