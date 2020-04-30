@@ -1,5 +1,17 @@
-import pandas as pandas
+import pandas as pd
 
-df = pd.read_csv("temp0001.txt")
-
-df
+df = pd.read_csv("temp0001.txt",header=None,
+                 names=['Тикер', 'Цена', 'Див. доход', 'Прогн. доход', 'Флаг див.', 'Валюта', 'Кумм. коэф.', 'Дата дивиденда'],
+                 skipfooter=0)
+a = 0.1
+b=0.15
+def color_negative_red(val):
+    """
+    Takes a scalar and returns a string with
+    the css property `'color: red'` for negative
+    strings, black otherwise.
+    """
+    color = 'red' if val < a else 'black'
+    return 'color: %s' % color
+df.style.applymap(color_negative_red)
+print(df)
