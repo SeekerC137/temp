@@ -2,8 +2,8 @@ import pandas as pd
 import numpy as np
 
 df = pd.read_csv("temp0001.txt",header=None,
-                 names=['Тикер', 'Цена', 'Див. доход', 'Прогн. доход', 'Флаг див.', 'Валюта', 'Кумм. коэф.', 'Отрасль', 'P/E'],
-                 skipfooter=0, dtype={'Тикер': str, 'Цена': float, 'Див. доход': float, 'Прогн. доход': float, 'Флаг див.': str, 'Валюта': str, 'Кумм. коэф.': int, 'Отрасль': str, 'P/E': float})
+                 names=['Тикер', 'Цена', 'Див. доход', 'Прогн. доход', 'P/E', 'Флаг див.', 'Валюта', 'Кумм. коэф.', 'Отрасль'],
+                 skipfooter=0, dtype={'Тикер': str, 'Цена': float, 'Див. доход': float, 'Прогн. доход': float, 'P/E': float, 'Флаг див.': str, 'Валюта': str, 'Кумм. коэф.': int, 'Отрасль': str})
 
 div_yield_std = np.std(df['Див. доход'])
 div_yield_mean = np.mean(df['Див. доход'])
