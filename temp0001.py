@@ -9,6 +9,12 @@ div_yield_std = np.std(df['Див. доход'])
 div_yield_mean = np.mean(df['Див. доход'])
 pred_yield_std = np.std(df['Прогн. доход'])
 pred_yield_mean = np.mean(df['Прогн. доход'])
+pe_usd_std = np.std(df.loc[df['Валюта'] == 'USD']['P/E'])
+pe_usd_mean = np.mean(df.loc[df['Валюта'] == 'USD']['P/E'])
+pe_rub_std = np.std(df.loc[df['Валюта'] == 'RUB']['P/E'])
+pe_rub_mean = np.mean(df.loc[df['Валюта'] == 'RUB']['P/E'])
+pe_std = np.std(df['P/E'])
+pe_mean = np.mean(df['P/E'])
 
 def highlight_plus1sigma_div_yield(data):
     color = 'yellow' if data > div_yield_mean + div_yield_std else ''
@@ -50,6 +56,15 @@ def highlight_minus1sigma_pred_yield(data):
     color = 'red' if data < pred_yield_mean - pred_yield_std else ''
     return 'background-color: %s' %color
 
+def highlight_plusmean_pe_usd(data):
+    color = 'pink' if data > pe_mean+1 else ''
+    return 'background-color: %s' %color
+
+def highlight_plusmean_pe_rub(data):
+    color = 'pink' if data > pe_rub_mean+1 else ''
+    return 'background-color: %s' %color
+
+
 def highlight_is_often_div(data):
     color = 'lightgreen' if int(data) >= 4 else ''
     return 'background-color: %s' %color
@@ -72,6 +87,9 @@ df = (df.style
         .applymap(highlight_plus3sigma_pred_yield, subset=['Прогн. доход'])
         .applymap(highlight_mean_pred_yield, subset=['Прогн. доход'])
         .applymap(highlight_minus1sigma_pred_yield, subset=['Прогн. доход'])
+        .applymap(highlight_plusmean_pe_usd, subset=['P/E'])
+        #.applymap(highlight_plusmean_pe_rub, subset=df.loc[df['Валюта'] == 'RUB']['P/E'])
+
         .applymap(highlight_is_often_div, subset=['Флаг див.'])
         .applymap(highlight_is_futur_div, subset=['Флаг див.'])
         .applymap(highlight_is_rub, subset=['Валюта'])
@@ -94,3 +112,4 @@ print('СВЕТЛО-ЗЕЛЕНЫЙ - для полей с оплатой див�
 print('\n')
 print('Для поля \"Валюта"\n')
 print('СВЕТЛО-ГОЛУБОЙ - для рублевых инструментов\n')
+print(df.data)
