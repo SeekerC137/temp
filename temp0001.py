@@ -94,5 +94,3 @@ df = (df.style
         .applymap(highlight_is_futur_div, subset=['Флаг див.'])
         .applymap(highlight_is_rub, subset=['Валюта'])
      )
-
-df()
