@@ -95,7 +95,6 @@ df = (df.style
         .applymap(highlight_mean_pred_yield, subset=['Прогн. доход'])
         .applymap(highlight_minus3sigma_pe, subset=['P/E'])
         .applymap(highlight_minus2sigma_pe, subset=['P/E'])
-        .applymap(highlight_minus1sigma_pe, subset=['P/E'])
         .applymap(highlight_plusmean_pe, subset=['P/E'])
         .applymap(highlight_plus1sigma_pe, subset=['P/E'])
         .applymap(highlight_is_often_div, subset=['Флаг див.'])
