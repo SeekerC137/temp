@@ -44,7 +44,7 @@ def highlight_minus1sigma_div_yield(data):
 
 
 def highlight_plus1sigma_pred_yield(data):                                          # Подсветка колонки прогнозов
-    color = 'yellow' if data > pred_yield_mean - 1 else ''
+    color = 'yellow' if data > pred_yield_mean + 1 else ''
     return 'background-color: %s' %color
 
 def highlight_plus2sigma_pred_yield(data):
@@ -56,7 +56,7 @@ def highlight_plus3sigma_pred_yield(data):
     return 'background-color: %s' %color
 
 def highlight_mean_pred_yield(data):
-    color = 'pink' if data <= pred_yield_mean-1 else ''
+    color = 'pink' if data <= pred_yield_mean - 1 else ''
     return 'background-color: %s' %color
 
 def highlight_minus1sigma_pred_yield(data):
