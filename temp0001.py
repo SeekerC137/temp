@@ -9,14 +9,10 @@ div_yield_std = np.std(df['Див. доход'])
 div_yield_mean = np.mean(df['Див. доход'])
 pred_yield_std = np.std(df['Прогн. доход'])
 pred_yield_mean = np.mean(df['Прогн. доход'])
-pe_usd_std = np.std(df.loc[df['Валюта'] == 'USD']['P/E'])
-pe_usd_mean = np.mean(df.loc[df['Валюта'] == 'USD']['P/E'])
-pe_rub_std = np.std(df.loc[df['Валюта'] == 'RUB']['P/E'])
-pe_rub_mean = np.mean(df.loc[df['Валюта'] == 'RUB']['P/E'])
 pe_std = np.std(df['P/E'])
 pe_mean = np.mean(df['P/E'])
 
-def highlight_plus1sigma_div_yield(data):
+def highlight_plus1sigma_div_yield(data):                                          # Подсветка колонки дивидендов
     color = 'yellow' if data > div_yield_mean + div_yield_std else ''
     return 'background-color: %s' %color
 
@@ -36,8 +32,9 @@ def highlight_minus1sigma_div_yield(data):
     color = 'red' if data < div_yield_mean - div_yield_std else ''
     return 'background-color: %s' %color
 
-def highlight_plus1sigma_pred_yield(data):
-    color = 'yellow' if data > pred_yield_mean + 1 else ''
+
+def highlight_plus1sigma_pred_yield(data):                                          # Подсветка колонки прогнозов
+    color = 'yellow' if data > pred_yield_mean - 1 else ''
     return 'background-color: %s' %color
 
 def highlight_plus2sigma_pred_yield(data):
@@ -49,30 +46,44 @@ def highlight_plus3sigma_pred_yield(data):
     return 'background-color: %s' %color
 
 def highlight_mean_pred_yield(data):
-    color = 'pink' if data < pred_yield_mean-1 else ''
+    color = 'pink' if data <= pred_yield_mean-1 else ''
     return 'background-color: %s' %color
 
 def highlight_minus1sigma_pred_yield(data):
     color = 'red' if data < pred_yield_mean - pred_yield_std else ''
     return 'background-color: %s' %color
 
-def highlight_plusmean_pe_usd(data):
+
+def highlight_minus3sigma_pe(data):                                               # Подсветка колонки P/E
+    color = 'green' if data > pe_mean-3*pe_std else ''
+    return 'background-color: %s' %color
+
+def highlight_minus2sigma_pe(data):
+    color = 'lightgreen' if data > pe_mean-2*pe_std else ''
+    return 'background-color: %s' %color
+
+def highlight_minus1sigma_pe(data):
+    color = 'yellow' if data > pe_mean-pe_std else ''
+    return 'background-color: %s' %color
+
+def highlight_plusmean_pe(data):
     color = 'pink' if data > pe_mean+1 else ''
     return 'background-color: %s' %color
 
-def highlight_plusmean_pe_rub(data):
-    color = 'pink' if data > pe_rub_mean+1 else ''
+def highlight_plus1sigma_pe(data):
+    color = 'red' if data > pe_mean+pe_std else ''
     return 'background-color: %s' %color
 
 
-def highlight_is_often_div(data):
+def highlight_is_often_div(data):                                                  # Подсветка колонки флага дивидендов
     color = 'lightgreen' if int(data) >= 4 else ''
     return 'background-color: %s' %color
 def highlight_is_futur_div(data):
     color = 'green' if data.find('+') != -1 and int(data) >= 4 else ''
     return 'background-color: %s' %color
 
-def highlight_is_rub(data):
+
+def highlight_is_rub(data):                                                        # Подсветка рублевых инструментов
     color = 'lightblue' if data == 'RUB' else ''
     return 'background-color: %s' %color
 
@@ -87,9 +98,11 @@ df = (df.style
         .applymap(highlight_plus3sigma_pred_yield, subset=['Прогн. доход'])
         .applymap(highlight_mean_pred_yield, subset=['Прогн. доход'])
         .applymap(highlight_minus1sigma_pred_yield, subset=['Прогн. доход'])
-        .applymap(highlight_plusmean_pe_usd, subset=['P/E'])
-        #.applymap(highlight_plusmean_pe_rub, subset=df.loc[df['Валюта'] == 'RUB']['P/E'])
-
+        .applymap(highlight_minus3sigma_pe, subset=['P/E'])
+        .applymap(highlight_minus2sigma_pe, subset=['P/E'])
+        .applymap(highlight_minus1sigma_pe, subset=['P/E'])
+        .applymap(highlight_plusmean_pe, subset=['P/E'])
+        .applymap(highlight_plus1sigma_pe, subset=['P/E'])
         .applymap(highlight_is_often_div, subset=['Флаг див.'])
         .applymap(highlight_is_futur_div, subset=['Флаг див.'])
         .applymap(highlight_is_rub, subset=['Валюта'])
