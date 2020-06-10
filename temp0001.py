@@ -9,8 +9,18 @@ div_yield_std = np.std(df['Див. доход'])
 div_yield_mean = np.mean(df['Див. доход'])
 pred_yield_std = np.std(df['Прогн. доход'])
 pred_yield_mean = np.mean(df['Прогн. доход'])
-pe_std = np.std(df['P/E'])
-pe_mean = np.mean(df['P/E'])
+
+PE = []
+count=0
+summ=0
+for i in df['P/E']:
+    if i <100:
+        count+=1
+        summ+=i
+        PE.append(i)
+pe_mean = summ/count
+pe_std = np.std(PE)
+
 
 def highlight_plus1sigma_div_yield(data):                                          # Подсветка колонки дивидендов
     color = 'yellow' if data > div_yield_mean + div_yield_std else ''
