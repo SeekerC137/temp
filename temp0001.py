@@ -55,11 +55,11 @@ def highlight_minus1sigma_pred_yield(data):
 
 
 def highlight_minus3sigma_pe(data):                                               # Подсветка колонки P/E
-    color = 'green' if data > pe_mean-3*pe_std else ''
+    color = 'green' if data < pe_mean-3*pe_std else ''
     return 'background-color: %s' %color
 
 def highlight_minus2sigma_pe(data):
-    color = 'lightgreen' if data > pe_mean-2*pe_std else ''
+    color = 'lightgreen' if data < pe_mean-2*pe_std else ''
     return 'background-color: %s' %color
 
 def highlight_plusmean_pe(data):
