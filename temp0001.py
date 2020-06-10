@@ -67,7 +67,7 @@ def highlight_minus1sigma_pe(data):
     return 'background-color: %s' %color
 
 def highlight_plusmean_pe(data):
-    color = 'pink' if data > pe_mean+1 else ''
+    color = 'pink' if data > pe_mean+0.1 else ''
     return 'background-color: %s' %color
 
 def highlight_plus1sigma_pe(data):
@@ -97,7 +97,7 @@ df = (df.style
         .applymap(highlight_plus2sigma_pred_yield, subset=['Прогн. доход'])
         .applymap(highlight_plus3sigma_pred_yield, subset=['Прогн. доход'])
         .applymap(highlight_mean_pred_yield, subset=['Прогн. доход'])
-        .applymap(highlight_minus1sigma_pred_yield, subset=['Прогн. доход'])
+        #.applymap(highlight_minus1sigma_pred_yield, subset=['Прогн. доход'])
         .applymap(highlight_minus3sigma_pe, subset=['P/E'])
         .applymap(highlight_minus2sigma_pe, subset=['P/E'])
         .applymap(highlight_minus1sigma_pe, subset=['P/E'])
