@@ -7,8 +7,15 @@ df = pd.read_csv("temp0025.txt",header=None,
 
 div_yield_std = np.std(df['Див. доход'])
 div_yield_mean = np.mean(df['Див. доход'])
-pred_yield_std = np.std(df['Прогн. доход'])
-pred_yield_mean = np.mean(df['Прогн. доход'])
+
+PP = []
+
+for i in df['Прогн. доход']:                                # Отбираю только прогнозный доход < 100% и > -100%
+    if i < 100 and i > -100:
+        PP.append(i)
+
+pred_yield_std = np.std(PP)
+pred_yield_mean = np.mean(PP)
 
 PE = []
 count=0
