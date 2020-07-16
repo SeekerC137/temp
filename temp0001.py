@@ -12,7 +12,7 @@ PP = []
 
 for i in df['Прогн. доход']:                                # Отбираю только прогнозный доход < 100% и > -100%
     if i < 100 and i > -100:
-    PP.append(i)
+        PP.append(i)
 
 pred_yield_std = np.std(df[PP])
 pred_yield_mean = np.mean(df[PP])
