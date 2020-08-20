@@ -13098,19 +13098,33 @@ div#notebook {
     <div class="prompt"></div>
 
 
-<div class="output_subarea output_text output_error">
-<pre>
-<span class="ansi-red-intense-fg ansi-bold">---------------------------------------------------------------------------</span>
-<span class="ansi-red-intense-fg ansi-bold">ZeroDivisionError</span>                         Traceback (most recent call last)
-<span class="ansi-green-intense-fg ansi-bold">c:\Scripts\temp\temp0018.py</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
-<span class="ansi-green-fg">     19</span>         summ<span class="ansi-yellow-intense-fg ansi-bold">+=</span>i
-<span class="ansi-green-fg">     20</span>         PE<span class="ansi-yellow-intense-fg ansi-bold">.</span>append<span class="ansi-yellow-intense-fg ansi-bold">(</span>i<span class="ansi-yellow-intense-fg ansi-bold">)</span>
-<span class="ansi-green-intense-fg ansi-bold">---&gt; 21</span><span class="ansi-yellow-intense-fg ansi-bold"> </span>pe_mean <span class="ansi-yellow-intense-fg ansi-bold">=</span> summ<span class="ansi-yellow-intense-fg ansi-bold">/</span>count
-<span class="ansi-green-fg">     22</span> pe_std <span class="ansi-yellow-intense-fg ansi-bold">=</span> np<span class="ansi-yellow-intense-fg ansi-bold">.</span>std<span class="ansi-yellow-intense-fg ansi-bold">(</span>PE<span class="ansi-yellow-intense-fg ansi-bold">)</span>
-<span class="ansi-green-fg">     23</span> 
-
-<span class="ansi-red-intense-fg ansi-bold">ZeroDivisionError</span>: division by zero</pre>
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>C:\Users\Andrey\AppData\Roaming\Python\Python37\site-packages\numpy\core\_methods.py:217: RuntimeWarning: Degrees of freedom &lt;= 0 for slice
+  keepdims=keepdims)
+C:\Users\Andrey\AppData\Roaming\Python\Python37\site-packages\numpy\core\_methods.py:186: RuntimeWarning: invalid value encountered in true_divide
+  arrmean, rcount, out=arrmean, casting=&#39;unsafe&#39;, subok=False)
+C:\Users\Andrey\AppData\Roaming\Python\Python37\site-packages\numpy\core\_methods.py:209: RuntimeWarning: invalid value encountered in double_scalars
+  ret = ret.dtype.type(ret / rcount)
+C:\Users\Andrey\AppData\Roaming\Python\Python37\site-packages\numpy\core\fromnumeric.py:3335: RuntimeWarning: Mean of empty slice.
+  out=out, **kwargs)
+C:\Users\Andrey\AppData\Roaming\Python\Python37\site-packages\numpy\core\_methods.py:161: RuntimeWarning: invalid value encountered in double_scalars
+  ret = ret.dtype.type(ret / rcount)
+</pre>
 </div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[1]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<style  type="text/css" >
+</style><table id="T_d6726700_e2d0_11ea_bfec_00e04caa3030" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >Тикер</th>        <th class="col_heading level0 col1" >Цена</th>        <th class="col_heading level0 col2" >Див. доход</th>        <th class="col_heading level0 col3" >Прогн. доход</th>        <th class="col_heading level0 col4" >P/E</th>        <th class="col_heading level0 col5" >Флаг див.</th>        <th class="col_heading level0 col6" >Валюта</th>        <th class="col_heading level0 col7" >Кумм. коэф.</th>        <th class="col_heading level0 col8" >Отрасль</th>    </tr></thead><tbody>
+        </tbody></table>
+</div>
+
 </div>
 
 </div>

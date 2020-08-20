@@ -15,7 +15,7 @@ for i in df['Прогн. доход']:                                # Отби
         PP.append(i)
 
 pred_yield_std = np.std(PP)
-pred_yield_mean = np.mean(PP])
+pred_yield_mean = np.mean(PP)
 
 PE = []
 count=0

@@ -1,11 +1,14 @@
 import os
 import nbformat
 from nbconvert import HTMLExporter
+from nbconvert.preprocessors import ExecutePreprocessor
 
 def converter(input_file):
     f = open(input_file, 'r', encoding='utf-8').read()
     jake_notebook = nbformat.reads(f, as_version=4)
     jake_notebook.cells[0]
+    ep = ExecutePreprocessor(timeout=600, kernel_name='python3')
+    ep.preprocess(jake_notebook, {'metadata': {'path': 'C:\\Scripts\\temp'}})
     html_exporter = HTMLExporter()
     (body, resources) = html_exporter.from_notebook_node(jake_notebook)
     with open(input_file.split('.ipynb')[0] + '.html', 'w', encoding='utf-8') as out:
