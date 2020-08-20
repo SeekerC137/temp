@@ -25,7 +25,10 @@ for i in df['P/E']:
         count+=1
         summ+=i
         PE.append(i)
-pe_mean = summ/count
+if count>0:
+    pe_mean = summ/count
+else:
+    pe_mean = 0
 pe_std = np.std(PE)
 
 
