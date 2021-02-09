@@ -3,6 +3,13 @@ import nbformat
 from nbconvert import HTMLExporter
 from nbconvert.preprocessors import ExecutePreprocessor
 
+import sys # bugfix after 26.01.2021
+import asyncio # bugfix after 26.01.2021
+
+if sys.version_info[0] == 3 and sys.version_info[1] >= 8 and sys.platform.startswith('win'): # bugfix after 26.01.2021
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy()) # bugfix after 26.01.2021
+
+
 def converter(input_file):
     f = open(input_file, 'r', encoding='utf-8').read()
     jake_notebook = nbformat.reads(f, as_version=4)
