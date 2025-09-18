@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MODERATO — Тест-подбор вина</title>
+  <style>
+    :root{
+      --bg:#ffffff;
+      --ink:#111111;
+      --muted:#6f6f6f;
+      --accent:#B38B59;
+      --border:#e9e9e9;
+      --radius:14px;
+      --shadow:0 10px 30px rgba(0,0,0,.06);
+      --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Arial,"Noto Sans",sans-serif;
+    }
+    body{margin:0;background:#fff;color:var(--ink);font-family:var(--font);}
+    .wrap{max-width: 1000px; margin: 24px auto; padding: 0 16px;}
+    #wine-quiz{max-width: 880px;margin: 24px auto;background: var(--bg);color: var(--ink);border: 1px solid var(--border);border-radius: var(--radius);box-shadow: var(--shadow);overflow: hidden;}
+    .wq-header{padding: 28px 28px 8px;border-bottom: 1px solid var(--border);background: linear-gradient(180deg,#fff, #fff8f0 160%);}
+    .wq-kicker{text-transform: uppercase;letter-spacing: .12em;font-size: 12px;color: var(--muted);margin-bottom: 6px;}
+    .wq-title{font-size: 32px;line-height: 1.15;letter-spacing: .02em;margin: 0 0 8px 0;}
+    .wq-sub{color: var(--muted);font-size: 14px;margin: 0 0 14px 0;}
+    .wq-progress{height: 6px;background:#f4f4f4;border-radius:8px;overflow:hidden;}
+    .wq-progress > span{display:block;height: 100%;width: 0%;background: var(--accent);transition: width .35s ease;}
+    .wq-body{padding: 28px;}
+    .wq-question{font-size: 20px;letter-spacing:.02em;margin: 0 0 18px 0;}
+    .wq-options{display: grid;grid-template-columns: repeat(2, minmax(0,1fr));gap: 12px;}
+    @media (max-width:720px){.wq-options{ grid-template-columns: 1fr; }}
+    .wq-option{position:relative;padding: 14px 16px;border: 1px solid var(--border);border-radius: 12px;background: #fff;cursor: pointer;transition: transform .08s ease, box-shadow .2s ease, border-color .2s ease;}
+    .wq-option:hover{transform: translateY(-1px);box-shadow: 0 8px 20px rgba(0,0,0,.06);border-color: #dedede;}
+    .wq-option strong{display:block;font-size: 16px;margin-bottom: 4px;letter-spacing:.02em;}
+    .wq-option small{color: var(--muted);font-size: 12px;}
+    .wq-nav{display:flex;gap:10px;justify-content: space-between;align-items:center;margin-top: 18px;padding: 0 28px 24px;}
+    .wq-left, .wq-right{ display:flex; gap:10px; }
+    .wq-btn{appearance:none;border:none;cursor:pointer;border-radius: 999px;padding: 12px 18px;font-weight: 600;letter-spacing:.06em;text-transform: uppercase;background:#f6f6f6;color:#222;transition: transform .06s ease, box-shadow .2s ease, background .2s ease;}
+    .wq-btn:hover{ transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,0,0,.06); }
+    .wq-btn:disabled{ opacity:.5; cursor:not-allowed; }
+    .wq-btn--accent{background: var(--ink);color: #fff;}
+    .wq-btn--outline{background:#fff;border:1px solid var(--border);}
+    .wq-result{border: 1px dashed var(--border);border-radius: 12px;padding: 18px;background: #fff;}
+    .wq-result h3{margin:0 0 8px 0;font-size: 24px;letter-spacing:.02em;}
+    .wq-tags{display:flex; flex-wrap: wrap; gap:8px; margin-top:10px;}
+    .wq-tag{padding:6px 10px; border:1px solid var(--border);border-radius:999px; font-size:12px; color:var(--muted);background:#fff;}
+    .wq-footnote{margin-top: 14px; color: var(--muted); font-size: 12px;}
+    .wq-screen{ opacity:0; transform: translateY(6px); animation:fadeIn .25s ease forwards; }
+    @keyframes fadeIn{ to{ opacity:1; transform:none; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div id="wine-quiz-root"></div>
+  </div>
+
+  <script>
+  (function(){
+    const tree = {
+      start: "color",
+      nodes: {
+        color: {
+          type:"Q",
+          title:"МОДЕРАТО — ТЕСТ-ПОДБОР",
+          question:"Какой цвет вина предпочитаете для блюда/настроения сейчас?",
+          options: [
+            { label:"Белое", hint:"свежее, минеральное, сливочное", go:"weight_white" },
+            { label:"Розовое", hint:"свежее, гастрономичное", go:"weight_rose" },
+            { label:"Красное", hint:"ягодное, пряное, танинное", go:"weight_red" },
+            { label:"Игристое", hint:"брют/экстра-брют, универсально", result:"sparkling" }
+          ]
+        },
+        weight_white:{
+          type:"Q",
+          question:"Какой «вес» и текстура?",
+          options:[
+            { label:"Лёгкое/хрустящее", hint:"салаты, морепродукты", go:"acidity_white_light" },
+            { label:"Среднетелое", hint:"птица, паста, сливки", go:"aroma_white_medium" },
+            { label:"Полное/маслянистое", hint:"сливочные соусы, жареная птица", result:"white_full_burg" }
+          ]
+        },
+        acidity_white_light:{
+          type:"Q",
+          question:"Про кислотность/минеральность?",
+          options:[
+            { label:"Высокая/минеральная", hint:"устрицы, цитрус", result:"white_marine" },
+            { label:"Фруктовая и мягкая", hint:"азиатская кухня, пряности", result:"white_aromatic" }
+          ]
+        },
+        aroma_white_medium:{
+          type:"Q",
+          question:"Какую ароматику любите?",
+          options:[
+            { label:"Цитрус/зелень", hint:"подобно NZ Sauvignon", result:"white_sauv_style" },
+            { label:"Косточковые/цветы", hint:"Альбариньо, Грюнер", result:"white_floral" }
+          ]
+        },
+        weight_rose:{
+          type:"Q",
+          question:"Розовое — к чему склоняемся?",
+          options:[
+            { label:"Сухое, хрустящее", hint:"прованс, гастрономичность", result:"rose_provence" },
+            { label:"Фруктовое/ягодное", hint:"вечеринки, тапас", result:"rose_fruity" }
+          ]
+        },
+        weight_red:{
+          type:"Q",
+          question:"Какой уровень тела/танина?",
+          options:[
+            { label:"Лёгкое ягодное", hint:"пасты, птица, тунец", go:"aroma_red_light" },
+            { label:"Среднее, бархатистое", hint:"свинина, телятина", go:"aroma_red_medium" },
+            { label:"Плотное и танинное", hint:"стейки, гриль", go:"sauce_red_full" }
+          ]
+        },
+        aroma_red_light:{
+          type:"Q",
+          question:"Ароматика лёгкого красного?",
+          options:[
+            { label:"Кислая ягода/пряность", hint:"гамэ, клюква", result:"red_light_gamay" },
+            { label:"Сочное вишнёвое", hint:"пино нуар стиль", result:"red_light_pinot" }
+          ]
+        },
+        aroma_red_medium:{
+          type:"Q",
+          question:"Хочется больше фруктов или пряностей?",
+          options:[
+            { label:"Фруктов и мягкости", hint:"мерло/темпранийо", result:"red_medium_fruity" },
+            { label:"Пряностей и дуба", hint:"ризервы/купажи", result:"red_medium_oak" }
+          ]
+        },
+        sauce_red_full:{
+          type:"Q",
+          question:"Соус/подача к мясу?",
+          options:[
+            { label:"Перечный/соус без сахара", hint:"классика к стейку", result:"red_full_cab" },
+            { label:"Сладковатый/BBQ/глазировка", hint:"ищем фрукт/влажный дуб", result:"red_full_shiraz" }
+          ]
+        },
+        sparkling:{ type:"RESULT", resultId:"sparkling" },
+        white_marine:{ type:"RESULT", resultId:"white_marine" },
+        white_aromatic:{ type:"RESULT", resultId:"white_aromatic" },
+        white_sauv_style:{ type:"RESULT", resultId:"white_sauv_style" },
+        white_floral:{ type:"RESULT", resultId:"white_floral" },
+        white_full_burg:{ type:"RESULT", resultId:"white_full_burg" },
+        rose_provence:{ type:"RESULT", resultId:"rose_provence" },
+        rose_fruity:{ type:"RESULT", resultId:"rose_fruity" },
+        red_light_gamay:{ type:"RESULT", resultId:"red_light_gamay" },
+        red_light_pinot:{ type:"RESULT", resultId:"red_light_pinot" },
+        red_medium_fruity:{ type:"RESULT", resultId:"red_medium_fruity" },
+        red_medium_oak:{ type:"RESULT", resultId:"red_medium_oak" },
+        red_full_cab:{ type:"RESULT", resultId:"red_full_cab" },
+        red_full_shiraz:{ type:"RESULT", resultId:"red_full_shiraz" }
+      }
+    };
+
+    const resultsMap = {
+      sparkling:{ title:"Игристое (Brut/Extra Brut)", desc:"Универсальная пара: оливки, морепродукты, сыры, закуски. Идеально для аперитива и старта ужина.", tags:["Шампань/Кава/Креман","Выс. кислотность","Аперитив","Универсально"] },
+      white_marine:{ title:"Свежее минеральное белое", desc:"К острым цитрусовым нотам и морепродуктам. Подходит к устрицам, креветкам, тар-тар из рыбы.", tags:["Мускadet/Чабли/Ассиртико","Выс. кислотность","Морепродукты"] },
+      white_aromatic:{ title:"Ароматное белое (дружелюбное)", desc:"Когда хочется фруктов и пряностей: к азиатской кухне, пряным соусам, салатам с манго.", tags:["Рислинг off-dry/Гевюрцтраминер","Фрукты","Пряности"] },
+      white_sauv_style:{ title:"Совиньон-стиль (цитрус/зелень)", desc:"Хрусткость и трава — отлично к салатам, козьему сыру, зелени, белой рыбе.", tags:["Sauvignon Blanc","Цитрус","Зелень","Хрусткость"] },
+      white_floral:{ title:"Флорально-фруктовое белое", desc:"К пасте, птице, мягким сливочным соусам; хорошая гастрономичность без агрессии.", tags:["Альбариньо/Грюнер/Вердиккьо","Сред. тело","Гибко"] },
+      white_full_burg:{ title:"Полное сливочное белое", desc:"К жареной птице, сливочным соусам, запечённой рыбе. Следы бочкового тона приветствуются.", tags:["Шардоне (Бургундия/Новый Свет)","Невыс. кислота","Сливочность"] },
+      rose_provence:{ title:"Сухое розовое (Прованс-стиль)", desc:"Гастрономично, к закускам, рыбе, овощам, летней кухне — идеальный вариант «на стол».", tags:["Прованс","Сухость","Хрусткость"] },
+      rose_fruity:{ title:"Фруктовое розовое", desc:"Ягодно и дружелюбно — отлично для фуршетов, пиццы, закусок, непринужденного вечера.", tags:["Ягоды","Лёгкость","Фуршет"] },
+      red_light_gamay:{ title:"Лёгкое ягодное красное", desc:"Подходит к птице, пасте, тунцу — охлаждаем до 14–15°C для большей свежести.", tags:["Гаме/Божоле","Низк. танин","Ягоды"] },
+      red_light_pinot:{ title:"Лёгкий пино-стиль", desc:"Тонкая ягода, чуть землистости — к утке, грибам, тунцу, пастам.", tags:["Pinot Noir","Изящность","К гастрономии"] },
+      red_medium_fruity:{ title:"Среднетелое фруктовое красное", desc:"Мягкие таннины, спелая фруктовость — к телятине, свинине, рагу.", tags:["Мерло/Темпранийо","Бархатистость"] },
+      red_medium_oak:{ title:"Среднетелое с бочкой/пряностями", desc:"Копчёно-пряные тона для мясных блюд, запекания, зрелых сыров.", tags:["Риоха Резерва/Купажи","Дуб","Пряности"] },
+      red_full_cab:{ title:"Плотное танинное красное", desc:"Идеальный спутник стейков с перечным/несладким соусом. Просите выдержку.", tags:["Cabernet Sauvignon/Классика","Выс. танин","Стейк"] },
+      red_full_shiraz:{ title:"Плотное с фруктовой мощью", desc:"Когда глазировки и BBQ — нужна спелость и сладковатая пряность.", tags:["Шираз/Зинфандель","BBQ/Глазировка"] }
+    };
+
+    const root = document.getElementById('wine-quiz-root');
+    const state = { path: [], answers: [] };
+
+    function el(tag, props={}, children=[]){
+      const n = document.createElement(tag);
+      Object.assign(n, props);
+      (Array.isArray(children)?children:[children]).filter(Boolean).forEach(c=>{
+        if(typeof c === 'string'){ n.appendChild(document.createTextNode(c)); }
+        else n.appendChild(c);
+      });
+      return n;
+    }
+
+    function percentProgress(){
+      const steps = Math.min(state.path.length+1, 6);
+      return Math.round(Math.min(100, steps/6*100));
+    }
+
+    function render(){
+      root.innerHTML = '';
+      const shell = el('div',{id:'wine-quiz'});
+
+      const header = el('div',{className:'wq-header wq-screen'},[
+        el('div',{className:'wq-kicker'},'МОДЕРАТО — ТЕСТ-ПОДБОР'),
+        el('h2',{className:'wq-title'},'Найдите своё вино за 30 секунд'),
+        el('p',{className:'wq-sub'},'Ответьте на несколько вопросов — и получите персональную рекомендацию к вашему блюду/настроению.'),
+        (()=> {
+          const bar = el('div',{className:'wq-progress'},[ el('span') ]);
+          requestAnimationFrame(()=>{ bar.firstChild.style.width = percentProgress()+'%'; });
+          return bar;
+        })()
+      ]);
+      shell.appendChild(header);
+
+      const body = el('div',{className:'wq-body wq-screen'});
+      const currentId = state.path.length ? state.path[state.path.length-1] : tree.start;
+      const node = tree.nodes[currentId];
+
+      if(!node){ body.appendChild(el('p',{},'Ошибка: узел не найден.')); shell.appendChild(body); root.appendChild(shell); return; }
+
+      if(node.type === 'Q'){
+        if(node.title){ body.appendChild(el('div',{className:'wq-kicker'}, node.title)); }
+        body.appendChild(el('h3',{className:'wq-question'}, node.question));
+
+        const list = el('div',{className:'wq-options'});
+        node.options.forEach(opt=>{
+          const card = el('button',{className:'wq-option', type:'button'});
+          card.appendChild(el('strong',{},opt.label));
+          if(opt.hint){ card.appendChild(el('small',{},opt.hint)); }
+          card.addEventListener('click', ()=>{
+            state.answers.push({nodeId: currentId, label: opt.label});
+            if(opt.go){ state.path.push(opt.go); }
+            else if(opt.result){ state.path.push(opt.result); }
+            render();
+          });
+          list.appendChild(card);
+        });
+        body.appendChild(list);
+
+      } else if(node.type === 'RESULT'){
+        const r = resultsMap[node.resultId];
+        if(!r){ body.appendChild(el('p',{},'Результат не найден.')); }
+        else {
+          body.appendChild(el('div',{className:'wq-result'},[
+            el('h3',{}, r.title),
+            el('p',{}, r.desc),
+            el('div',{className:'wq-tags'}, r.tags.map(t=>el('span',{className:'wq-tag'}, t)))
+          ]));
+          body.appendChild(el('p',{className:'wq-footnote'},
+            'Подсказка: сравните выбранный стиль с меню ужина. Настоящий вкус раскрывается в паре «вино + блюдо».'
+          ));
+        }
+      }
+
+      const nav = el('div',{className:'wq-nav wq-screen'});
+      const left = el('div',{className:'wq-left'});
+      const right = el('div',{className:'wq-right'});
+
+      const backBtn = el('button',{className:'wq-btn wq-btn--outline', type:'button', disabled: state.path.length===0},'Назад');
+      backBtn.addEventListener('click', ()=>{
+        if(state.answers.length){ state.answers.pop(); }
+        if(state.path.length){ state.path.pop(); }
+        render();
+      });
+
+      const resetBtn = el('button',{className:'wq-btn', type:'button'},'Сначала');
+      resetBtn.addEventListener('click', ()=>{
+        state.path = [];
+        state.answers = [];
+        render();
+      });
+
+      let ctaBtn = null;
+      const atNode = tree.nodes[state.path[state.path.length-1]];
+      if(atNode && atNode.type==='RESULT'){
+        ctaBtn = el('a',{
+          className:'wq-btn wq-btn--accent', href:'#abc_wine_signup'
+        }, 'Записаться на курс');
+      }
+
+      left.appendChild(backBtn);
+      left.appendChild(resetBtn);
+      if(ctaBtn) right.appendChild(ctaBtn);
+      nav.appendChild(left);
+      nav.appendChild(right);
+
+      shell.appendChild(body);
+      shell.appendChild(nav);
+      root.appendChild(shell);
+    }
+
+    function init(){
+      state.path = [tree.start];
+      render();
+    }
+
+    if(document.readyState === 'loading'){
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+  </script>
+</body>
+</html>
