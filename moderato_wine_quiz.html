@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>MODERATO — Тест-подбор вина</title>
+  <title>MODERATO — Фудпейринг: выберите 4 характеристики блюда</title>
   <style>
     :root{
       --bg:#ffffff;
@@ -28,13 +28,13 @@
     .wq-question{font-size: 20px;letter-spacing:.02em;margin: 0 0 18px 0;}
     .wq-options{display: grid;grid-template-columns: repeat(2, minmax(0,1fr));gap: 12px;}
     @media (max-width:720px){.wq-options{ grid-template-columns: 1fr; }}
-    .wq-option{position:relative;padding: 14px 16px;border: 1px solid var(--border);border-radius: 12px;background: #fff;cursor: pointer;transition: transform .08s ease, box-shadow .2s ease, border-color .2s ease;}
+    .wq-option{position:relative;padding: 14px 16px;border: 1px solid var(--border);border-radius: 12px;background: #fff;cursor: pointer;transition: transform .08s ease, box-shadow .2s ease, border-color .2s ease;text-align:left;}
     .wq-option:hover{transform: translateY(-1px);box-shadow: 0 8px 20px rgba(0,0,0,.06);border-color: #dedede;}
     .wq-option strong{display:block;font-size: 16px;margin-bottom: 4px;letter-spacing:.02em;}
     .wq-option small{color: var(--muted);font-size: 12px;}
     .wq-nav{display:flex;gap:10px;justify-content: space-between;align-items:center;margin-top: 18px;padding: 0 28px 24px;}
-    .wq-left, .wq-right{ display:flex; gap:10px; }
-    .wq-btn{appearance:none;border:none;cursor:pointer;border-radius: 999px;padding: 12px 18px;font-weight: 600;letter-spacing:.06em;text-transform: uppercase;background:#f6f6f6;color:#222;transition: transform .06s ease, box-shadow .2s ease, background .2s ease;}
+    .wq-left, .wq-right{ display:flex; gap:10px; flex-wrap: wrap;}
+    .wq-btn{appearance:none;border:none;cursor:pointer;border-radius: 999px;padding: 12px 18px;font-weight: 600;letter-spacing:.06em;text-transform: uppercase;background:#f6f6f6;color:#222;transition: transform .06s ease, box-shadow .2s ease, background .2s ease;text-decoration:none;}
     .wq-btn:hover{ transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,0,0,.06); }
     .wq-btn:disabled{ opacity:.5; cursor:not-allowed; }
     .wq-btn--accent{background: var(--ink);color: #fff;}
@@ -45,6 +45,8 @@
     .wq-tag{padding:6px 10px; border:1px solid var(--border);border-radius:999px; font-size:12px; color:var(--muted);background:#fff;}
     .wq-footnote{margin-top: 14px; color: var(--muted); font-size: 12px;}
     .wq-screen{ opacity:0; transform: translateY(6px); animation:fadeIn .25s ease forwards; }
+    .wq-cta{margin-top:16px;padding:16px;border:1px solid var(--border);border-radius:12px;background:#fff;}
+    .wq-cta p{margin:0 0 10px 0;}
     @keyframes fadeIn{ to{ opacity:1; transform:none; } }
   </style>
 </head>
@@ -55,122 +57,91 @@
 
   <script>
   (function(){
-    const tree = {
-      start: "color",
-      nodes: {
-        color: {
-          type:"Q",
-          title:"МОДЕРАТО — ТЕСТ-ПОДБОР",
-          question:"Какой цвет вина предпочитаете для блюда/настроения сейчас?",
-          options: [
-            { label:"Белое", hint:"свежее, минеральное, сливочное", go:"weight_white" },
-            { label:"Розовое", hint:"свежее, гастрономичное", go:"weight_rose" },
-            { label:"Красное", hint:"ягодное, пряное, танинное", go:"weight_red" },
-            { label:"Игристое", hint:"брют/экстра-брют, универсально", result:"sparkling" }
-          ]
-        },
-        weight_white:{
-          type:"Q",
-          question:"Какой «вес» и текстура?",
-          options:[
-            { label:"Лёгкое/хрустящее", hint:"салаты, морепродукты", go:"acidity_white_light" },
-            { label:"Среднетелое", hint:"птица, паста, сливки", go:"aroma_white_medium" },
-            { label:"Полное/маслянистое", hint:"сливочные соусы, жареная птица", result:"white_full_burg" }
-          ]
-        },
-        acidity_white_light:{
-          type:"Q",
-          question:"Про кислотность/минеральность?",
-          options:[
-            { label:"Высокая/минеральная", hint:"устрицы, цитрус", result:"white_marine" },
-            { label:"Фруктовая и мягкая", hint:"азиатская кухня, пряности", result:"white_aromatic" }
-          ]
-        },
-        aroma_white_medium:{
-          type:"Q",
-          question:"Какую ароматику любите?",
-          options:[
-            { label:"Цитрус/зелень", hint:"подобно NZ Sauvignon", result:"white_sauv_style" },
-            { label:"Косточковые/цветы", hint:"Альбариньо, Грюнер", result:"white_floral" }
-          ]
-        },
-        weight_rose:{
-          type:"Q",
-          question:"Розовое — к чему склоняемся?",
-          options:[
-            { label:"Сухое, хрустящее", hint:"прованс, гастрономичность", result:"rose_provence" },
-            { label:"Фруктовое/ягодное", hint:"вечеринки, тапас", result:"rose_fruity" }
-          ]
-        },
-        weight_red:{
-          type:"Q",
-          question:"Какой уровень тела/танина?",
-          options:[
-            { label:"Лёгкое ягодное", hint:"пасты, птица, тунец", go:"aroma_red_light" },
-            { label:"Среднее, бархатистое", hint:"свинина, телятина", go:"aroma_red_medium" },
-            { label:"Плотное и танинное", hint:"стейки, гриль", go:"sauce_red_full" }
-          ]
-        },
-        aroma_red_light:{
-          type:"Q",
-          question:"Ароматика лёгкого красного?",
-          options:[
-            { label:"Кислая ягода/пряность", hint:"гамэ, клюква", result:"red_light_gamay" },
-            { label:"Сочное вишнёвое", hint:"пино нуар стиль", result:"red_light_pinot" }
-          ]
-        },
-        aroma_red_medium:{
-          type:"Q",
-          question:"Хочется больше фруктов или пряностей?",
-          options:[
-            { label:"Фруктов и мягкости", hint:"мерло/темпранийо", result:"red_medium_fruity" },
-            { label:"Пряностей и дуба", hint:"ризервы/купажи", result:"red_medium_oak" }
-          ]
-        },
-        sauce_red_full:{
-          type:"Q",
-          question:"Соус/подача к мясу?",
-          options:[
-            { label:"Перечный/соус без сахара", hint:"классика к стейку", result:"red_full_cab" },
-            { label:"Сладковатый/BBQ/глазировка", hint:"ищем фрукт/влажный дуб", result:"red_full_shiraz" }
-          ]
-        },
-        sparkling:{ type:"RESULT", resultId:"sparkling" },
-        white_marine:{ type:"RESULT", resultId:"white_marine" },
-        white_aromatic:{ type:"RESULT", resultId:"white_aromatic" },
-        white_sauv_style:{ type:"RESULT", resultId:"white_sauv_style" },
-        white_floral:{ type:"RESULT", resultId:"white_floral" },
-        white_full_burg:{ type:"RESULT", resultId:"white_full_burg" },
-        rose_provence:{ type:"RESULT", resultId:"rose_provence" },
-        rose_fruity:{ type:"RESULT", resultId:"rose_fruity" },
-        red_light_gamay:{ type:"RESULT", resultId:"red_light_gamay" },
-        red_light_pinot:{ type:"RESULT", resultId:"red_light_pinot" },
-        red_medium_fruity:{ type:"RESULT", resultId:"red_medium_fruity" },
-        red_medium_oak:{ type:"RESULT", resultId:"red_medium_oak" },
-        red_full_cab:{ type:"RESULT", resultId:"red_full_cab" },
-        red_full_shiraz:{ type:"RESULT", resultId:"red_full_shiraz" }
+    // 4 ВОПРОСА: Цвет блюда → Вес → Кислотность/Насыщенность → Аромат
+    const QUESTIONS = [
+      {
+        id: "color",
+        title: "MODERATO — Фудпейринг",
+        question: "Шаг 1. Цвет блюда. Что на тарелке доминирует по цвету?",
+        note: "Двигайтесь слева направо по характеристикам блюда и подсказкам: Цвет → Вес → Кислотность/Насыщенность → Аромат.", // из таблицы
+        options: [
+          {value:"light", label:"Светлое", hint:"рыба, морепродукты, белое мясо, светлые соусы"},
+          {value:"pink",  label:"Розовое/ора́нжевое", hint:"лосось, креветки, томат, тапас"},
+          {value:"red",   label:"Тёмное/красное", hint:"красное мясо, томлёные соусы, гриль"},
+          {value:"any",   label:"Разноцветные закуски", hint:"фуршет, аперитив, универсально"}
+        ]
+      },
+      {
+        id: "body",
+        question: "Шаг 2. Вес (тельность) блюда. Как ощущается блюдо?",
+        options: [
+          {value:"light",  label:"Лёгкое", hint:"хрустящее, деликатные текстуры"},
+          {value:"medium", label:"Среднее", hint:"птица, паста, сливочные ноты"},
+          {value:"full",   label:"Насыщенное", hint:"жареное, жирное, стейк, BBQ"}
+        ]
+      },
+      {
+        id: "acidity",
+        question: "Шаг 3. Кислотность/Насыщенность сопровождения.",
+        options: [
+          {value:"high",   label:"Выраженная кислотность", hint:"цитрус, маринады, каперсы"},
+          {value:"moderate",label:"Умеренная", hint:"баланс без резких акцентов"},
+          {value:"low",    label:"Невысокая/сливочная", hint:"сливки, масло, запекание"}
+        ]
+      },
+      {
+        id: "aroma",
+        question: "Шаг 4. Ароматика блюда. Просите ароматность или пряности?",
+        options: [
+          {value:"neutral", label:"Сдержанная", hint:"чистый вкус продукта"},
+          {value:"aromatic",label:"Ароматное", hint:"цитрус, травы, цветы"},
+          {value:"spicy",   label:"Пряное/со специями", hint:"перец, копчёности, BBQ"}
+        ]
       }
-    };
+    ];
 
-    const resultsMap = {
-      sparkling:{ title:"Игристое (Brut/Extra Brut)", desc:"Универсальная пара: оливки, морепродукты, сыры, закуски. Идеально для аперитива и старта ужина.", tags:["Шампань/Кава/Креман","Выс. кислотность","Аперитив","Универсально"] },
-      white_marine:{ title:"Свежее минеральное белое", desc:"К острым цитрусовым нотам и морепродуктам. Подходит к устрицам, креветкам, тар-тар из рыбы.", tags:["Мускadet/Чабли/Ассиртико","Выс. кислотность","Морепродукты"] },
-      white_aromatic:{ title:"Ароматное белое (дружелюбное)", desc:"Когда хочется фруктов и пряностей: к азиатской кухне, пряным соусам, салатам с манго.", tags:["Рислинг off-dry/Гевюрцтраминер","Фрукты","Пряности"] },
-      white_sauv_style:{ title:"Совиньон-стиль (цитрус/зелень)", desc:"Хрусткость и трава — отлично к салатам, козьему сыру, зелени, белой рыбе.", tags:["Sauvignon Blanc","Цитрус","Зелень","Хрусткость"] },
-      white_floral:{ title:"Флорально-фруктовое белое", desc:"К пасте, птице, мягким сливочным соусам; хорошая гастрономичность без агрессии.", tags:["Альбариньо/Грюнер/Вердиккьо","Сред. тело","Гибко"] },
-      white_full_burg:{ title:"Полное сливочное белое", desc:"К жареной птице, сливочным соусам, запечённой рыбе. Следы бочкового тона приветствуются.", tags:["Шардоне (Бургундия/Новый Свет)","Невыс. кислота","Сливочность"] },
-      rose_provence:{ title:"Сухое розовое (Прованс-стиль)", desc:"Гастрономично, к закускам, рыбе, овощам, летней кухне — идеальный вариант «на стол».", tags:["Прованс","Сухость","Хрусткость"] },
-      rose_fruity:{ title:"Фруктовое розовое", desc:"Ягодно и дружелюбно — отлично для фуршетов, пиццы, закусок, непринужденного вечера.", tags:["Ягоды","Лёгкость","Фуршет"] },
-      red_light_gamay:{ title:"Лёгкое ягодное красное", desc:"Подходит к птице, пасте, тунцу — охлаждаем до 14–15°C для большей свежести.", tags:["Гаме/Божоле","Низк. танин","Ягоды"] },
-      red_light_pinot:{ title:"Лёгкий пино-стиль", desc:"Тонкая ягода, чуть землистости — к утке, грибам, тунцу, пастам.", tags:["Pinot Noir","Изящность","К гастрономии"] },
-      red_medium_fruity:{ title:"Среднетелое фруктовое красное", desc:"Мягкие таннины, спелая фруктовость — к телятине, свинине, рагу.", tags:["Мерло/Темпранийо","Бархатистость"] },
-      red_medium_oak:{ title:"Среднетелое с бочкой/пряностями", desc:"Копчёно-пряные тона для мясных блюд, запекания, зрелых сыров.", tags:["Риоха Резерва/Купажи","Дуб","Пряности"] },
-      red_full_cab:{ title:"Плотное танинное красное", desc:"Идеальный спутник стейков с перечным/несладким соусом. Просите выдержку.", tags:["Cabernet Sauvignon/Классика","Выс. танин","Стейк"] },
-      red_full_shiraz:{ title:"Плотное с фруктовой мощью", desc:"Когда глазировки и BBQ — нужна спелость и сладковатая пряность.", tags:["Шираз/Зинфандель","BBQ/Глазировка"] }
+    // 12 результатов
+    const RESULTS = {
+      sparkling:  {title:"Игристое Brut/Extra Brut",
+        desc:"Универсальный аперитив к разноцветным закускам, сырам и морепродуктам. Высокая свежесть — выстраивает стол и настроение.",
+        tags:["Шампань/Кава/Креман","Высокая кислотность","Аперитив","Универсально"]},
+      white_marine:{title:"Свежее минеральное белое",
+        desc:"Соль моря и цитрус: идеальная пара к устрицам, креветкам, рыбе. Хрусткость подчёркивает деликатные текстуры.",
+        tags:["Мускаде/Чабли/Ассиртико","Морепродукты","Минеральность"]},
+      white_aromatic:{title:"Ароматное белое (дружелюбное)",
+        desc:"Фрукт и пряности для азиатской кухни и ярких соусов. Балансирует сладковато-пряные нотки.",
+        tags:["Рислинг off-dry/Гевюрцтраминер","Фрукты","Пряности"]},
+      white_sauv:{title:"Совиньон-стиль (цитрус/зелень)",
+        desc:"Травянистая свежесть, хрусткость и лимонная линия — к салатам, козьему сыру, белой рыбе.",
+        tags:["Sauvignon Blanc","Зелень","Хрусткость"]},
+      white_floral:{title:"Флорально-фруктовое белое",
+        desc:"Нежные косточковые и цветы: гибкая гастрономичность к пасте, птице, мягким сливочным соусам.",
+        tags:["Альбариньо/Грюнер/Вердиккьо","Среднее тело","Гибко"]},
+      white_chard:{title:"Полное сливочное белое",
+        desc:"Шардоне с кремовой текстурой — к запечённой рыбе, жареной птице и сливочным соусам.",
+        tags:["Шардоне (Бургундия/Новый Свет)","Невысокая кислотность","Сливочность"]},
+      rose_prov:{title:"Сухое розовое (Прованс)",
+        desc:"Хрусткое и гастрономичное: рыба, овощи, лёгкие закуски. Идеально «на стол».",
+        tags:["Прованс","Сухость","Гастрономичность"]},
+      rose_fruity:{title:"Фруктовое розовое",
+        desc:"Ягодная дружелюбность для фуршетов, пиццы и тапас. Пьётся легко и широко сочетается.",
+        tags:["Ягоды","Лёгкость","Фуршет"]},
+      red_light:{title:"Лёгкое ягодное красное",
+        desc:"Гаме/Пино: охлаждаем слегка — к птице, пасте, тунцу. Низкий танин, чистая ягода.",
+        tags:["Гаме/Пино Нуар","Низкий танин","Свежесть"]},
+      red_medium_fruit:{title:"Среднетелое фруктовое красное",
+        desc:"Мягкие таннины и спелая фруктовость — к свинине, телятине, рагу.",
+        tags:["Мерло/Темпранильо","Бархатистость"]},
+      red_medium_oak:{title:"Среднетелое с бочкой/пряностями",
+        desc:"Копчёно-пряные акценты для запечённого мяса и зрелых сыров.",
+        tags:["Риоха Резерва/Купажи","Дуб","Пряности"]},
+      red_full:{title:"Плотное танинное красное",
+        desc:"Каберне и стейки: когда подача — перец и несладкие соусы, структура вина работает на блюдо.",
+        tags:["Cabernet Sauvignon","Высокий танин","Стейк"]}
     };
 
     const root = document.getElementById('wine-quiz-root');
-    const state = { path: [], answers: [] };
+    const state = { step:0, answers:{} };
 
     function el(tag, props={}, children=[]){
       const n = document.createElement(tag);
@@ -182,96 +153,146 @@
       return n;
     }
 
-    function percentProgress(){
-      const steps = Math.min(state.path.length+1, 6);
-      return Math.round(Math.min(100, steps/6*100));
+    function progressPct(){ return Math.round((state.step / QUESTIONS.length) * 100); }
+
+    function decideResult(a){
+      // Правила подбора (упрощённая матрица 4×3×3×3 → 12 стилей)
+      const {color, body, acidity, aroma} = a;
+
+      // Универсальный случай фуршета/микс
+      if(color === "any"){
+        if(acidity === "high") return "sparkling";
+        return (aroma === "aromatic") ? "rose_prov" : "rose_fruity";
+      }
+
+      // Светлые блюда
+      if(color === "light"){
+        if(body === "light"){
+          if(acidity === "high") return "white_marine";
+          return (aroma === "aromatic") ? "white_sauv" : "white_floral";
+        }
+        if(body === "medium"){
+          if(acidity === "high") return "white_sauv";
+          return (aroma === "aromatic") ? "white_floral" : "white_floral";
+        }
+        // full
+        if(acidity === "low") return "white_chard";
+        return (aroma === "spicy") ? "white_floral" : "white_chard";
+      }
+
+      // Розово-оранжевая тарелка
+      if(color === "pink"){
+        if(body === "light") return (acidity === "high") ? "rose_prov" : "rose_fruity";
+        if(body === "medium") return (aroma === "aromatic") ? "rose_prov" : "rose_fruity";
+        // full
+        return (aroma === "spicy") ? "rose_fruity" : "rose_prov";
+      }
+
+      // Тёмные/красные блюда
+      if(color === "red"){
+        if(body === "light"){
+          return (aroma === "spicy") ? "red_medium_fruit" : "red_light";
+        }
+        if(body === "medium"){
+          if(aroma === "spicy") return "red_medium_oak";
+          return (acidity === "high") ? "red_light" : "red_medium_fruit";
+        }
+        // full
+        if(aroma === "spicy") return "red_medium_oak";
+        return "red_full";
+      }
+
+      // fallback
+      return "sparkling";
     }
 
     function render(){
       root.innerHTML = '';
       const shell = el('div',{id:'wine-quiz'});
 
+      // Header
       const header = el('div',{className:'wq-header wq-screen'},[
         el('div',{className:'wq-kicker'},'МОДЕРАТО — ТЕСТ-ПОДБОР'),
-        el('h2',{className:'wq-title'},'Найдите своё вино за 30 секунд'),
-        el('p',{className:'wq-sub'},'Ответьте на несколько вопросов — и получите персональную рекомендацию к вашему блюду/настроению.'),
+        el('h2',{className:'wq-title'},'Подберите вино к блюду за 4 шага'),
+        el('p',{className:'wq-sub'},'Цвет → Вес → Кислотность/Насыщенность → Аромат. Настоящий вкус раскрывается только в паре «вино + блюдо».'),
+        // ↑ формула и фраза из вашей таблицы
         (()=> {
           const bar = el('div',{className:'wq-progress'},[ el('span') ]);
-          requestAnimationFrame(()=>{ bar.firstChild.style.width = percentProgress()+'%'; });
+          requestAnimationFrame(()=>{ bar.firstChild.style.width = progressPct()+'%'; });
           return bar;
         })()
       ]);
       shell.appendChild(header);
 
       const body = el('div',{className:'wq-body wq-screen'});
-      const currentId = state.path.length ? state.path[state.path.length-1] : tree.start;
-      const node = tree.nodes[currentId];
 
-      if(!node){ body.appendChild(el('p',{},'Ошибка: узел не найден.')); shell.appendChild(body); root.appendChild(shell); return; }
-
-      if(node.type === 'Q'){
-        if(node.title){ body.appendChild(el('div',{className:'wq-kicker'}, node.title)); }
-        body.appendChild(el('h3',{className:'wq-question'}, node.question));
+      if(state.step < QUESTIONS.length){
+        const q = QUESTIONS[state.step];
+        if(q.title) body.appendChild(el('div',{className:'wq-kicker'}, q.title));
+        body.appendChild(el('h3',{className:'wq-question'}, q.question));
+        if(q.note) body.appendChild(el('p',{className:'wq-sub'}, q.note));
 
         const list = el('div',{className:'wq-options'});
-        node.options.forEach(opt=>{
+        q.options.forEach(opt=>{
           const card = el('button',{className:'wq-option', type:'button'});
           card.appendChild(el('strong',{},opt.label));
           if(opt.hint){ card.appendChild(el('small',{},opt.hint)); }
           card.addEventListener('click', ()=>{
-            state.answers.push({nodeId: currentId, label: opt.label});
-            if(opt.go){ state.path.push(opt.go); }
-            else if(opt.result){ state.path.push(opt.result); }
+            state.answers[q.id||q.question] = opt.value;
+            state.step++;
             render();
           });
           list.appendChild(card);
         });
         body.appendChild(list);
 
-      } else if(node.type === 'RESULT'){
-        const r = resultsMap[node.resultId];
-        if(!r){ body.appendChild(el('p',{},'Результат не найден.')); }
-        else {
-          body.appendChild(el('div',{className:'wq-result'},[
-            el('h3',{}, r.title),
-            el('p',{}, r.desc),
-            el('div',{className:'wq-tags'}, r.tags.map(t=>el('span',{className:'wq-tag'}, t)))
-          ]));
-          body.appendChild(el('p',{className:'wq-footnote'},
-            'Подсказка: сравните выбранный стиль с меню ужина. Настоящий вкус раскрывается в паре «вино + блюдо».'
-          ));
-        }
+      } else {
+        const resId = decideResult(state.answers);
+        const r = RESULTS[resId];
+
+        body.appendChild(el('div',{className:'wq-result'},[
+          el('h3',{}, r.title),
+          el('p',{}, r.desc),
+          el('div',{className:'wq-tags'}, r.tags.map(t=>el('span',{className:'wq-tag'}, t)))
+        ]));
+
+        body.appendChild(el('p',{className:'wq-footnote'},
+          'Подсказка: соотнесите стиль вина с выбранными характеристиками блюда. Настоящий вкус раскрывается в паре «вино + блюдо».'
+        ));
+
+        // CTA — «Хотите обладать знаниями…»
+        const cta = el('div',{className:'wq-cta'},[
+          el('p',{}, 'Хотите обладать знаниями для самостоятельного выбора вин? Превратите таблицу в навык, который всегда работает — приходите на курс «Азбука вина».'),
+          el('a',{
+            className:'wq-btn wq-btn--accent',
+            href:'https://moderato-sv.ru/abc_wine/?utm_source=foodpairing#b12690',
+            target:'_blank',
+            rel:'noopener'
+          }, 'Записаться на курс')
+        ]);
+        body.appendChild(cta);
       }
 
+      // Навигация
       const nav = el('div',{className:'wq-nav wq-screen'});
       const left = el('div',{className:'wq-left'});
       const right = el('div',{className:'wq-right'});
 
-      const backBtn = el('button',{className:'wq-btn wq-btn--outline', type:'button', disabled: state.path.length===0},'Назад');
+      const backBtn = el('button',{className:'wq-btn wq-btn--outline', type:'button', disabled: state.step===0},'Назад');
       backBtn.addEventListener('click', ()=>{
-        if(state.answers.length){ state.answers.pop(); }
-        if(state.path.length){ state.path.pop(); }
+        if(state.step>0){ state.step--; }
         render();
       });
 
       const resetBtn = el('button',{className:'wq-btn', type:'button'},'Сначала');
       resetBtn.addEventListener('click', ()=>{
-        state.path = [];
-        state.answers = [];
+        state.step = 0;
+        state.answers = {};
         render();
       });
 
-      let ctaBtn = null;
-      const atNode = tree.nodes[state.path[state.path.length-1]];
-      if(atNode && atNode.type==='RESULT'){
-        ctaBtn = el('a',{
-          className:'wq-btn wq-btn--accent', href:'https://moderato-sv.ru/abc_wine/#b12690'
-        }, 'Записаться на курс');
-      }
-
       left.appendChild(backBtn);
       left.appendChild(resetBtn);
-      if(ctaBtn) right.appendChild(ctaBtn);
       nav.appendChild(left);
       nav.appendChild(right);
 
@@ -280,16 +301,8 @@
       root.appendChild(shell);
     }
 
-    function init(){
-      state.path = [tree.start];
-      render();
-    }
-
-    if(document.readyState === 'loading'){
-      document.addEventListener('DOMContentLoaded', init);
-    } else {
-      init();
-    }
+    function init(){ state.step = 0; state.answers = {}; render(); }
+    if(document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', init); } else { init(); }
   })();
   </script>
 </body>
