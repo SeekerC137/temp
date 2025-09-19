@@ -56,51 +56,101 @@
 
   <script>
   (function(){
-    // 4 шага: Цвет → Вес → Кислотность/Насыщенность → Аромат (из вашей таблицы)
-    const QUESTIONS = [
+    // ===== НАСТРОЙКИ ВОПРОСОВ =====
+    // Шаг 1 фиксированный; шаги 2–4 получают динамические hint'ы в зависимости от предыдущих ответов
+    const QUESTIONS_BASE = [
       {
         id:"color",
         title:"MODERATO — Фудпейринг",
         question:"Шаг 1. Цвет блюда. Какая «палитра» доминирует?",
         note:"Цвет → Вес → Кислотность/Насыщенность → Аромат. Настоящий вкус раскрывается только в паре «вино + блюдо».",
         options:[
-          {value:"red",   label:"Красное", hint:"тёмное мясо, томлёные соусы, гриль"},
-          {value:"white", label:"Белое",  hint:"рыба, морепродукты, белое мясо, светлые соусы"}
+          {value:"red",   label:"Красное", hint:"стейк/рибай, баранина, томлёная говядина, томатные соусы, гриль/копчение"},
+          {value:"white", label:"Белое",  hint:"устрицы, креветки, белая рыба, курица, сливочно-масляные соусы"}
         ]
       },
-      {
-        id:"body",
-        question:"Шаг 2. Вес (тельность) блюда. Как ощущается текстура?",
-        options:[
-          {value:"light", label:"Лёгкое",   hint:"деликатные текстуры, хрусткость"},
-          {value:"full",  label:"Тяжёлое",  hint:"жареное, жирное, насыщенное"}
-        ]
-      },
-      {
-        id:"intensity",
-        question:"Шаг 3. Кислотность/насыщенность подачи.",
-        // по ТЗ: два варианта: «Жирное/солёное/кислое» ИЛИ «Нежное»
-        options:[
-          {value:"bold", label:"Жирное/солёное/кислое", hint:"сливочное масло, маринады, каперсы"},
-          {value:"delicate", label:"Нежное", hint:"мягкий баланс без резких акцентов"}
-        ]
-      },
-      {
-        id:"aroma",
-        question:"Шаг 4. Ароматика. Пряности и аромат — да или нет?",
-        options:[
-          {value:"spicy", label:"Пряное/ароматное", hint:"перец, травы, копчёные ноты"},
-          {value:"neutral", label:"Не пряное/не ароматное", hint:"чистый вкус продукта"}
-        ]
-      }
+      { id:"body",       question:"Шаг 2. Вес (тельность) блюда. Как ощущается текстура?", options:[] },
+      { id:"intensity",  question:"Шаг 3. Кислотность/насыщенность подачи.",             options:[] },
+      { id:"aroma",      question:"Шаг 4. Ароматика. Пряности и аромат — да или нет?",   options:[] }
     ];
 
-    // 12 результатов: ТИТУЛЫ В ТОЧНОСТИ КАК В ВАШЕМ PDF
-    // (описания — краткие сомелье-подсказки для сервировки)
+    // ===== ДИНАМИЧЕСКИЕ HINT'Ы ПО ОТВЕТАМ =====
+    function hintsForBody(ans){
+      const c = ans.color;
+      if(c === "red"){
+        return [
+          {value:"light", label:"Лёгкое",  hint:"Кролик, Утка, Тунец, Паста, Птица на гриле без соуса"},
+          {value:"full",  label:"Тяжёлое", hint:"Стейк (рибай/стриплойн), Томлёная говядина, Баранина, BBQ"}
+        ];
+      }
+      // white
+      return [
+        {value:"light", label:"Лёгкое",  hint:"Севиче/тартар, Устрицы, Белая рыба на пару, Салат с зеленью"},
+        {value:"full",  label:"Тяжёлое", hint:"Запечённая рыба со сливочным соусом, Курица, Масляные/сливочные соусы"}
+      ];
+    }
+
+    function hintsForIntensity(ans){
+      const {color, body} = ans;
+      // «Жирное/солёное/кислое» vs «Нежное» — с примерами из вашей схемы
+      if(color === "red" && body === "full"){
+        return [
+          {value:"bold",     label:"Жирное/солёное/кислое", hint:"Перечный соус, BBQ-глазировка, Томаты, Ягодный соус"},
+          {value:"delicate", label:"Нежное",                 hint:"Запекание без кислоты, Мягкие гарниры"}
+        ];
+      }
+      if(color === "red" && body === "light"){
+        return [
+          {value:"bold",     label:"Жирное/солёное/кислое", hint:"Томаты/соусы, Каперсы, Ягодный соус (клюква)"},
+          {value:"delicate", label:"Нежное",                 hint:"Чистый сок продукта, Минимум соусов"}
+        ];
+      }
+      if(color === "white" && body === "full"){
+        return [
+          {value:"bold",     label:"Жирное/солёное/кислое", hint:"Сливочное масло/сливки, Сыр, Бекон"},
+          {value:"delicate", label:"Нежное",                 hint:"Нежные белые соусы, Запекание без кислоты"}
+        ];
+      }
+      // white light
+      return [
+        {value:"bold",     label:"Жирное/солёное/кислое", hint:"Лимон/уксус, Каперсы/анчоусы, Маринад"},
+        {value:"delicate", label:"Нежное",                 hint:"Деликатная подача, Минимум соли/кислоты"}
+      ];
+    }
+
+    function hintsForAroma(ans){
+      const {color, body, intensity} = ans;
+      // Подсказать специи/ароматику ближе к выбранной траектории
+      if(color === "red" && body === "full"){
+        return [
+          {value:"spicy",   label:"Пряное/ароматное",      hint:"Перец, Розмарин, Чеснок, Копчёности, BBQ"},
+          {value:"neutral", label:"Не пряное/не ароматное",hint:"Чистый вкус мяса, Нежные соки"}
+        ];
+      }
+      if(color === "red" && body === "light"){
+        return [
+          {value:"spicy",   label:"Пряное/ароматное",      hint:"Травы, Перец, Лёгкие копчёные ноты"},
+          {value:"neutral", label:"Не пряное/не ароматное",hint:"Грибы, Миндаль, Нейтральные соусы"}
+        ];
+      }
+      if(color === "white" && body === "full"){
+        return [
+          {value:"spicy",   label:"Пряное/ароматное",      hint:"Травы, Мускат, Пряные специи"},
+          {value:"neutral", label:"Не пряное/не ароматное",hint:"Сливочное масло, Миндаль, Грибы"}
+        ];
+      }
+      // white light
+      return [
+        {value:"spicy",   label:"Пряное/ароматное",      hint:"Цитрус, Зелень, Травы"},
+        {value:"neutral", label:"Не пряное/не ароматное",hint:"Чистый вкус рыбы/морепродуктов"}
+      ];
+    }
+
+    // ===== 12 РЕЗУЛЬТАТОВ (точные title из вашей таблицы) =====
     const RESULTS = {
-      cab_malbec: { // Красное, тяжёлое
+      cab_malbec: {
         title:"Каберне Совиньон (Бордо), Мальбек (Аргентина)",
-        desc:"Структура и спелая мощь для стейков и томлёных соусов. Просите выдержку и температуру сервировки ~16–18°C.",
+        desc:"Структура и спелая мощь для стейков и томлёных соусов. Просите выдержку и 16–18°C.",
         tags:["Плотное","Высокий танин","Стейк/гриль"]
       },
       syrah_shiraz: {
@@ -115,7 +165,7 @@
       },
       cab_franc: {
         title:"Каберне Фран (Луара)",
-        desc:"Холодная ягода, лист чёрной смородины и лёгкая пряность — отлично к птице на гриле и овощам.",
+        desc:"Холодная ягода, лист смородины и лёгкая пряность — к птице на гриле и овощам.",
         tags:["Свежесть","Умеренный танин","Птица/овощи"]
       },
       pinot_noir: {
@@ -160,11 +210,11 @@
       }
     };
 
-    // Простая логика 2×2×2×2 → 12 стилей (несколько комбинаций ведут к одному стилю)
+    // ===== МАТЧИНГ 2×2×2×2 → 12 СТИЛЕЙ =====
     function pickResult(a){
       const {color, body, intensity, aroma} = a;
 
-      // Игристое: белое + лёгкое + bold (контраст) ИЛИ любое при «фуршетной» логике (ароматика слабая)
+      // Игристое — белое + лёгкое + насыщенная подача (кислота/соль/жир), но без пряностей
       if(color==="white" && body==="light" && intensity==="bold" && aroma==="neutral") return "sparkling";
 
       if(color==="red"){
@@ -177,25 +227,24 @@
         return "pinot_noir";
       }
 
-      // Белое:
+      // белое:
       if(body==="full"){
-        if(intensity==="bold") return "chardonnay_chablis"; // сливочно/жирно — шардоне/шабли
+        if(intensity==="bold") return "chardonnay_chablis";
         return (aroma==="spicy") ? "riesling_gewurz" : "garganega_verona";
       }
 
-      // Белое лёгкое:
+      // белое лёгкое:
       if(aroma==="spicy"){
         if(intensity==="bold") return "riesling_gewurz";
         return "sauv_blanc";
       }
 
-      // Не пряное:
       if(intensity==="delicate") return "garganega_verona";
 
-      // Остальные белые лёгкие насыщенные:
       return "garnacha_pinotgrigio";
     }
 
+    // ===== РЕНДЕР =====
     const root = document.getElementById('wine-quiz-root');
     const state = { step:0, answers:{} };
 
@@ -203,10 +252,25 @@
       const n=document.createElement(tag); Object.assign(n, props);
       (Array.isArray(children)?children:[children]).filter(Boolean).forEach(c=>{
         if(typeof c==='string'){ n.appendChild(document.createTextNode(c)); } else n.appendChild(c);
-      });
-      return n;
+      }); return n;
     }
-    function progressPct(){ return Math.round((state.step/QUESTIONS.length)*100); }
+    function progressPct(){ return Math.round((state.step/QUESTIONS_BASE.length)*100); }
+
+    function getStepWithDynamicHints(idx){
+      const base = QUESTIONS_BASE[idx];
+      if(!base) return null;
+
+      if(base.id === "body"){
+        return {...base, options: hintsForBody(state.answers)};
+      }
+      if(base.id === "intensity"){
+        return {...base, options: hintsForIntensity(state.answers)};
+      }
+      if(base.id === "aroma"){
+        return {...base, options: hintsForAroma(state.answers)};
+      }
+      return base; // color — как есть
+    }
 
     function render(){
       root.innerHTML='';
@@ -224,11 +288,11 @@
 
       const body=el('div',{className:'wq-body wq-screen'});
 
-      if(state.step < QUESTIONS.length){
-        const q=QUESTIONS[state.step];
+      if(state.step < QUESTIONS_BASE.length){
+        const q = getStepWithDynamicHints(state.step);
         if(q.title) body.appendChild(el('div',{className:'wq-kicker'}, q.title));
         body.appendChild(el('h3',{className:'wq-question'}, q.question));
-        if(q.note) body.appendChild(el('p',{className:'wq-sub'}, q.note));
+        if(q.note)  body.appendChild(el('p',{className:'wq-sub'}, q.note));
 
         const list=el('div',{className:'wq-options'});
         q.options.forEach(opt=>{
