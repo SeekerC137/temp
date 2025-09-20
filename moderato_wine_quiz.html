@@ -32,10 +32,10 @@
     .wq-option strong{display:block;font-size:16px;margin-bottom:4px;letter-spacing:.02em;}
     .wq-option small{color:var(--muted);font-size:12px;}
     .wq-nav{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-top:18px;padding:0 28px 24px;}
-    .wq-left,.wq-right{display:flex;gap:10px;flex-wrap:wrap;}
+    .wq-left,.wq-right{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
     .wq-btn{appearance:none;border:none;cursor:pointer;border-radius:999px;padding:12px 18px;
       font-weight:600;letter-spacing:.06em;text-transform:uppercase;background:#f6f6f6;color:#222;
-      transition:transform .06s ease, box-shadow .2s ease, background .2s ease;text-decoration:none;}
+      transition:transform .06s ease, box-shadow .2s ease, background .2s ease;text-decoration:none;display:inline-block;}
     .wq-btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(0,0,0,.06);}
     .wq-btn:disabled{opacity:.5;cursor:not-allowed;}
     .wq-btn--accent{background:var(--ink);color:#fff;}
@@ -45,8 +45,7 @@
     .wq-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
     .wq-tag{padding:6px 10px;border:1px solid var(--border);border-radius:999px;font-size:12px;color:var(--muted);background:#fff;}
     .wq-footnote{margin-top:14px;color:var(--muted);font-size:12px;}
-    .wq-cta{margin-top:16px;padding:16px;border:1px solid var(--border);border-radius:12px;background:#fff;}
-    .wq-cta p{margin:0 0 10px 0;}
+    /* .wq-cta удалён, кнопка переехала вниз в .wq-nav */
     .wq-screen{opacity:0;transform:translateY(6px);animation:fadeIn .25s ease forwards;}
     @keyframes fadeIn{to{opacity:1;transform:none;}}
   </style>
@@ -57,7 +56,6 @@
   <script>
   (function(){
     // ===== НАСТРОЙКИ ВОПРОСОВ =====
-    // Шаг 1 фиксированный; шаги 2–4 получают динамические hint'ы в зависимости от предыдущих ответов
     const QUESTIONS_BASE = [
       {
         id:"color",
@@ -74,7 +72,7 @@
       { id:"aroma",      question:"Шаг 4. Ароматика. Пряности и аромат — да или нет?",   options:[] }
     ];
 
-    // ===== ДИНАМИЧЕСКИЕ HINT'Ы ПО ОТВЕТАМ =====
+    // ===== ДИНАМИЧЕСКИЕ HINT'Ы =====
     function hintsForBody(ans){
       const c = ans.color;
       if(c === "red"){
@@ -83,16 +81,13 @@
           {value:"full",  label:"Тяжёлое", hint:"Стейк (рибай/стриплойн), Томлёная говядина, Баранина, BBQ"}
         ];
       }
-      // white
       return [
         {value:"light", label:"Лёгкое",  hint:"Дорада, Треска"},
         {value:"full",  label:"Тяжёлое", hint:"Лосось, Скумбрия, Осетр"}
       ];
     }
-
     function hintsForIntensity(ans){
       const {color, body} = ans;
-      // «Жирное/солёное/кислое» vs «Нежное» — с примерами из вашей схемы
       if(color === "red" && body === "full"){
         return [
           {value:"bold",     label:"Жирное/солёное/кислое", hint:"Рибай"},
@@ -111,16 +106,13 @@
           {value:"delicate", label:"Нежное",                 hint:"На пару"}
         ];
       }
-      // white light
       return [
         {value:"bold",     label:"Жирное/солёное/кислое", hint:"Овощи гриль"},
         {value:"delicate", label:"Нежное",                 hint:"Свежий салат"}
       ];
     }
-
     function hintsForAroma(ans){
-      const {color, body, intensity} = ans;
-      // Подсказать специи/ароматику ближе к выбранной траектории
+      const {color, body} = ans;
       if(color === "red" && body === "full"){
         return [
           {value:"spicy",   label:"Пряное/ароматное",      hint:"Соус Пеппер"},
@@ -139,14 +131,13 @@
           {value:"neutral", label:"Не пряное/не ароматное",hint:"Чистый вкус"}
         ];
       }
-      // white light
       return [
         {value:"spicy",   label:"Пряное/ароматное",      hint:"Тимьян, Шалфей, Цитрусы"},
         {value:"neutral", label:"Не пряное/не ароматное",hint:"Чистый вкус"}
       ];
     }
 
-    // ===== 12 РЕЗУЛЬТАТОВ (точные title из вашей таблицы) =====
+    // ===== 12 РЕЗУЛЬТАТОВ =====
     const RESULTS = {
       cab_malbec: {
         title:"Каберне Совиньон (Бордо), Мальбек (Аргентина)",
@@ -210,45 +201,33 @@
       },
     };
 
-    // МАТЧИНГ 2×2×2×2 → 12 стилей (с учётом правок к PDF:
-    // "sparkling" теперь отображает «Виура (Риоха), Пино Гриджио (Фриули)»,
-    // дефолт — «Вердехо (Руэда)»)
+    // Матчинг
     function pickResult({ color, body, intensity, aroma }) {
-      // Декларативная матрица соответствий:
-      // color: white|red
-      // body: light|full
-      // intensity: delicate|bold
-      // aroma: neutral|spicy
       const MAP = {
         white: {
           light: {
             neutral: { delicate: "sparkling",          bold: "garganega_verona" },
-            spicy:   { delicate: "verdejo_rueda",         bold: "verdejo_rueda"     }
+            spicy:   { delicate: "verdejo_rueda",       bold: "verdejo_rueda" }
           },
           full: {
-            neutral: { delicate: "chardonnay_chablis",   bold: "sauv_blanc"  },
-            spicy:   { delicate: "riesling_gewurz",    bold: "riesling_gewurz"     }
+            neutral: { delicate: "chardonnay_chablis",  bold: "sauv_blanc" },
+            spicy:   { delicate: "riesling_gewurz",     bold: "riesling_gewurz" }
           }
         },
         red: {
           light: {
-            neutral: { delicate: "pinot_noir",         bold: "cab_franc"          },
-            spicy:   { delicate: "sangiovese_chianti",          bold: "sangiovese_chianti"           }
+            neutral: { delicate: "pinot_noir",          bold: "cab_franc" },
+            spicy:   { delicate: "sangiovese_chianti",  bold: "sangiovese_chianti" }
           },
           full: {
-            neutral: { delicate: "tempranillo_merlot",         bold: "cab_malbec"          },
-            spicy:   { delicate: "syrah_shiraz",       bold: "syrah_shiraz"        }
+            neutral: { delicate: "tempranillo_merlot",  bold: "cab_malbec" },
+            spicy:   { delicate: "syrah_shiraz",        bold: "syrah_shiraz" }
           }
         }
       };
-
-      try {
-        return MAP[color][body][aroma][intensity] || "verdejo_rueda";
-      } catch {
-        return "verdejo_rueda";
-      }
+      try { return MAP[color][body][aroma][intensity] || "verdejo_rueda"; }
+      catch { return "verdejo_rueda"; }
     }
-
 
     // ===== РЕНДЕР =====
     const root = document.getElementById('wine-quiz-root');
@@ -265,17 +244,10 @@
     function getStepWithDynamicHints(idx){
       const base = QUESTIONS_BASE[idx];
       if(!base) return null;
-
-      if(base.id === "body"){
-        return {...base, options: hintsForBody(state.answers)};
-      }
-      if(base.id === "intensity"){
-        return {...base, options: hintsForIntensity(state.answers)};
-      }
-      if(base.id === "aroma"){
-        return {...base, options: hintsForAroma(state.answers)};
-      }
-      return base; // color — как есть
+      if(base.id === "body")      return {...base, options: hintsForBody(state.answers)};
+      if(base.id === "intensity") return {...base, options: hintsForIntensity(state.answers)};
+      if(base.id === "aroma")     return {...base, options: hintsForAroma(state.answers)};
+      return base;
     }
 
     function render(){
@@ -327,26 +299,45 @@
           'Подсказка: соотнесите стиль вина с выбранными характеристиками блюда. Настоящий вкус раскрывается в паре «вино + блюдо».'
         ));
 
-        // CTA
-        const cta=el('div',{className:'wq-cta'},[
-          el('p',{}, 'Хотите обладать знаниями для самостоятельного выбора вин? Превратите таблицу в навык, который всегда работает — приходите на курс «Азбука вина».'),
-          el('a',{className:'wq-btn wq-btn--accent', href:'https://moderato-sv.ru/abc_wine/?utm_source=foodpairing', target:'_blank', rel:'noopener'}, 'Записаться на курс')
-        ]);
-        body.appendChild(cta);
+        // ⚠️ Удалили прежний верхний CTA-блок здесь (кнопка переехала вниз в навигацию)
       }
 
-      // Навигация
+      // Навигация (нижняя панель)
       const nav=el('div',{className:'wq-nav wq-screen'});
       const left=el('div',{className:'wq-left'});
       const right=el('div',{className:'wq-right'});
+
       const backBtn=el('button',{className:'wq-btn wq-btn--outline',type:'button',disabled:state.step===0},'Назад');
       backBtn.addEventListener('click',()=>{ if(state.step>0){ state.step--; } render();});
+
       const resetBtn=el('button',{className:'wq-btn',type:'button'},'Сначала');
       resetBtn.addEventListener('click',()=>{ state.step=0; state.answers={}; render();});
-      left.appendChild(backBtn); left.appendChild(resetBtn);
-      nav.appendChild(left); nav.appendChild(right);
 
-      shell.appendChild(body); shell.appendChild(nav); root.appendChild(shell);
+      left.appendChild(backBtn);
+      left.appendChild(resetBtn);
+
+      // ⤵ Добавляем кнопку записи в правый нижний угол только на экране результата
+      if(state.step >= QUESTIONS_BASE.length){
+        const enrollBtn = el(
+          'a',
+          {
+            className:'wq-btn wq-btn--accent',
+            href:'https://moderato-sv.ru/abc_wine/?utm_source=foodpairing',
+            target:'_blank',
+            rel:'noopener',
+            'aria-label':'Записаться на курс «Азбука вина»'
+          },
+          'Записаться на курс'
+        );
+        right.appendChild(enrollBtn);
+      }
+
+      nav.appendChild(left);
+      nav.appendChild(right);
+
+      shell.appendChild(body);
+      shell.appendChild(nav);
+      root.appendChild(shell);
     }
 
     function init(){ state.step=0; state.answers={}; render(); }
