@@ -198,7 +198,7 @@
         desc:"Нежные косточковые, миндаль и соль — для ризотто, овощей, белого мяса.",
         tags:["Soave-стиль","Нежное","Гибкая пара"]
       },
-      garnacha_pinotgrigio: {
+      verdejo_rueda: {
         title:"Вердехо (Руэда)",
         desc:"Свежесть и лёгкая фруктовость — универсальное сопровождение к лёгким закускам, салатам, рыбе и фуршетам.",
         tags:["Универсально","Фуршет","Лёгкие блюда"]
@@ -210,34 +210,43 @@
       }
     };
 
-    // ===== МАТЧИНГ 2×2×2×2 → 12 СТИЛЕЙ (рефакторинг на базе правил) =====
-    function pickResult(a) {
-      const match = (conds) => Object.entries(conds).every(([k, v]) => a[k] === v);
+    // МАТЧИНГ 2×2×2×2 → 12 стилей (с учётом правок к PDF:
+    // "sparkling" теперь отображает «Виура (Риоха), Пино Гриджио (Фриули)»,
+    // дефолт — «Вердехо (Руэда)»)
+    function pickResult({ color, body, intensity, aroma }) {
+      // Декларативная матрица соответствий:
+      // color: white|red
+      // body: light|full
+      // intensity: delicate|bold
+      // aroma: neutral|spicy
+      const MAP = {
+        white: {
+          light: {
+            neutral: { delicate: "sparkling",          bold: "chardonnay_chablis" },
+            spicy:   { delicate: "sauv_blanc",         bold: "riesling_gewurz"     }
+          },
+          full: {
+            neutral: { delicate: "garganega_verona",   bold: "chardonnay_chablis"  },
+            spicy:   { delicate: "riesling_gewurz",    bold: "riesling_gewurz"     }
+          }
+        },
+        red: {
+          light: {
+            neutral: { delicate: "pinot_noir",         bold: "pinot_noir"          },
+            spicy:   { delicate: "cab_franc",          bold: "cab_franc"           }
+          },
+          full: {
+            neutral: { delicate: "cab_malbec",         bold: "cab_malbec"          },
+            spicy:   { delicate: "syrah_shiraz",       bold: "syrah_shiraz"        }
+          }
+        }
+      };
 
-      // ВАЖНО: порядок правил сохраняет приоритеты исходной логики
-      const RULES = [
-        // Игристое — белое + лёгкое + насыщенная подача (кислота/соль/жир), но без пряностей
-        { when: { color: "white", body: "light", intensity: "bold", aroma: "neutral" }, result: "garganega_verona" },
-
-        // Красное
-        { when: { color: "red", body: "full", aroma: "spicy" }, result: "syrah_shiraz" },
-        { when: { color: "red", body: "full" }, result: "cab_malbec" },
-        { when: { color: "red", aroma: "spicy" }, result: "cab_franc" },
-        { when: { color: "red" }, result: "pinot_noir" },
-
-        // Белое, полное
-        { when: { color: "white", body: "full", intensity: "bold" }, result: "chardonnay_chablis" },
-        { when: { color: "white", body: "full", aroma: "spicy" }, result: "riesling_gewurz" },
-        { when: { color: "white", body: "full" }, result: "garganega_verona" },
-
-        // Белое, лёгкое
-        { when: { color: "white", body: "light", aroma: "spicy", intensity: "bold" }, result: "riesling_gewurz" },
-        { when: { color: "white", body: "light", aroma: "spicy" }, result: "sauv_blanc" },
-        { when: { color: "white", body: "light", intensity: "delicate" }, result: "garganega_verona" },
-      ];
-
-      const hit = RULES.find(r => match(r.when));
-      return (hit || { result: "garnacha_pinotgrigio" }).result;
+      try {
+        return MAP[color][body][aroma][intensity] || "verdejo_rueda";
+      } catch {
+        return "verdejo_rueda";
+      }
     }
 
 
