@@ -65,8 +65,8 @@
         question:"Шаг 1. Цвет блюда. Какая «палитра» доминирует?",
         note:"Цвет → Вес → Кислотность/Насыщенность → Аромат. Настоящий вкус раскрывается только в паре «вино + блюдо».",
         options:[
-          {value:"red",   label:"Красное", hint:"стейк/рибай, баранина, томлёная говядина, томатные соусы, гриль/копчение"},
-          {value:"white", label:"Белое",  hint:"устрицы, креветки, белая рыба, курица, сливочно-масляные соусы"}
+          {value:"red",   label:"Красное", hint:"Мясо, Дичь"},
+          {value:"white", label:"Белое",  hint:"Рыба, Морепродукты, Курица"}
         ]
       },
       { id:"body",       question:"Шаг 2. Вес (тельность) блюда. Как ощущается текстура?", options:[] },
@@ -79,14 +79,14 @@
       const c = ans.color;
       if(c === "red"){
         return [
-          {value:"light", label:"Лёгкое",  hint:"Кролик, Утка, Тунец, Паста, Птица на гриле без соуса"},
+          {value:"light", label:"Лёгкое",  hint:"Кролик, Утка"},
           {value:"full",  label:"Тяжёлое", hint:"Стейк (рибай/стриплойн), Томлёная говядина, Баранина, BBQ"}
         ];
       }
       // white
       return [
-        {value:"light", label:"Лёгкое",  hint:"Севиче/тартар, Устрицы, Белая рыба на пару, Салат с зеленью"},
-        {value:"full",  label:"Тяжёлое", hint:"Запечённая рыба со сливочным соусом, Курица, Масляные/сливочные соусы"}
+        {value:"light", label:"Лёгкое",  hint:"Дорада, Треска"},
+        {value:"full",  label:"Тяжёлое", hint:"Лосось, Скумбрия, Осетр"}
       ];
     }
 
@@ -95,26 +95,26 @@
       // «Жирное/солёное/кислое» vs «Нежное» — с примерами из вашей схемы
       if(color === "red" && body === "full"){
         return [
-          {value:"bold",     label:"Жирное/солёное/кислое", hint:"Перечный соус, BBQ-глазировка, Томаты, Ягодный соус"},
-          {value:"delicate", label:"Нежное",                 hint:"Запекание без кислоты, Мягкие гарниры"}
+          {value:"bold",     label:"Жирное/солёное/кислое", hint:"Рибай"},
+          {value:"delicate", label:"Нежное",                 hint:"Филе миньон"}
         ];
       }
       if(color === "red" && body === "light"){
         return [
-          {value:"bold",     label:"Жирное/солёное/кислое", hint:"Томаты/соусы, Каперсы, Ягодный соус (клюква)"},
-          {value:"delicate", label:"Нежное",                 hint:"Чистый сок продукта, Минимум соусов"}
+          {value:"bold",     label:"Жирное/солёное/кислое", hint:"Сливочный соус"},
+          {value:"delicate", label:"Нежное",                 hint:"Ягодный соус"}
         ];
       }
       if(color === "white" && body === "full"){
         return [
-          {value:"bold",     label:"Жирное/солёное/кислое", hint:"Сливочное масло/сливки, Сыр, Бекон"},
-          {value:"delicate", label:"Нежное",                 hint:"Нежные белые соусы, Запекание без кислоты"}
+          {value:"bold",     label:"Жирное/солёное/кислое", hint:"На гриле"},
+          {value:"delicate", label:"Нежное",                 hint:"На пару"}
         ];
       }
       // white light
       return [
-        {value:"bold",     label:"Жирное/солёное/кислое", hint:"Лимон/уксус, Каперсы/анчоусы, Маринад"},
-        {value:"delicate", label:"Нежное",                 hint:"Деликатная подача, Минимум соли/кислоты"}
+        {value:"bold",     label:"Жирное/солёное/кислое", hint:"Овощи гриль"},
+        {value:"delicate", label:"Нежное",                 hint:"Свежий салат"}
       ];
     }
 
@@ -123,26 +123,26 @@
       // Подсказать специи/ароматику ближе к выбранной траектории
       if(color === "red" && body === "full"){
         return [
-          {value:"spicy",   label:"Пряное/ароматное",      hint:"Перец, Розмарин, Чеснок, Копчёности, BBQ"},
-          {value:"neutral", label:"Не пряное/не ароматное",hint:"Чистый вкус мяса, Нежные соки"}
+          {value:"spicy",   label:"Пряное/ароматное",      hint:"Соус Пеппер"},
+          {value:"neutral", label:"Не пряное/не ароматное",hint:"Чистый вкус"}
         ];
       }
       if(color === "red" && body === "light"){
         return [
-          {value:"spicy",   label:"Пряное/ароматное",      hint:"Травы, Перец, Лёгкие копчёные ноты"},
-          {value:"neutral", label:"Не пряное/не ароматное",hint:"Грибы, Миндаль, Нейтральные соусы"}
+          {value:"spicy",   label:"Пряное/ароматное",      hint:"Можжевельник, Розмарин"},
+          {value:"neutral", label:"Не пряное/не ароматное",hint:"Чистый вкус"}
         ];
       }
       if(color === "white" && body === "full"){
         return [
-          {value:"spicy",   label:"Пряное/ароматное",      hint:"Травы, Мускат, Пряные специи"},
-          {value:"neutral", label:"Не пряное/не ароматное",hint:"Сливочное масло, Миндаль, Грибы"}
+          {value:"spicy",   label:"Пряное/ароматное",      hint:"Кисло-сладкий азиатский"},
+          {value:"neutral", label:"Не пряное/не ароматное",hint:"Чистый вкус"}
         ];
       }
       // white light
       return [
-        {value:"spicy",   label:"Пряное/ароматное",      hint:"Цитрус, Зелень, Травы"},
-        {value:"neutral", label:"Не пряное/не ароматное",hint:"Чистый вкус рыбы/морепродуктов"}
+        {value:"spicy",   label:"Пряное/ароматное",      hint:"Тимьян, Шалфей, Цитрусы"},
+        {value:"neutral", label:"Не пряное/не ароматное",hint:"Чистый вкус"}
       ];
     }
 
@@ -167,6 +167,11 @@
         title:"Каберне Фран (Луара)",
         desc:"Холодная ягода, лист смородины и лёгкая пряность — к птице на гриле и овощам.",
         tags:["Свежесть","Умеренный танин","Птица/овощи"]
+      },
+      sangiovese_chianti: {
+        title:"Санджовезе (Кьянти)",
+        desc:"Вишня, травы и живая кислотность — к томатным соусам, пасте и пицце.",
+        tags:["Италия","Томаты","Кислотность"]
       },
       pinot_noir: {
         title:"Пино Нуар (Бургундия)",
@@ -193,56 +198,48 @@
         desc:"Нежные косточковые, миндаль и соль — для ризотто, овощей, белого мяса.",
         tags:["Soave-стиль","Нежное","Гибкая пара"]
       },
-      sangiovese_chianti: {
-        title:"Санджовезе (Кьянти)",
-        desc:"Вишня, травы и живая кислотность — к томатным соусам, пасте и пицце.",
-        tags:["Италия","Томаты","Кислотность"]
-      },
       garnacha_pinotgrigio: {
-        title:"Гарнача (Риоха), Пино Гриджио (Орвието)",
-        desc:"От ягодной дружелюбности до деликатной свежести — для закусок, фуршетов, лёгких рыбных блюд.",
+        title:"Вердехо (Руэда)",
+        desc:"Свежесть и лёгкая фруктовость — универсальное сопровождение к лёгким закускам, салатам, рыбе и фуршетам.",
         tags:["Универсально","Фуршет","Лёгкие блюда"]
       },
       sparkling: {
-        title:"Игристое Brut/Extra Brut",
-        desc:"Аперитивный свежий старт — к разноцветным закускам, сырам и морепродуктам.",
+        title:"Виура (Риоха), Пино Гриджио (Фриули)",
+        desc:"От освежающей минеральности до фруктовой мягкости — подходит к закускам, сырам, морепродуктам и лёгким блюдам.",
         tags:["Высокая кислотность","Аперитив","Морепродукты"]
       }
     };
 
-    // ===== МАТЧИНГ 2×2×2×2 → 12 СТИЛЕЙ =====
-    function pickResult(a){
-      const {color, body, intensity, aroma} = a;
+    // ===== МАТЧИНГ 2×2×2×2 → 12 СТИЛЕЙ (рефакторинг на базе правил) =====
+    function pickResult(a) {
+      const match = (conds) => Object.entries(conds).every(([k, v]) => a[k] === v);
 
-      // Игристое — белое + лёгкое + насыщенная подача (кислота/соль/жир), но без пряностей
-      if(color==="white" && body==="light" && intensity==="bold" && aroma==="neutral") return "sparkling";
+      // ВАЖНО: порядок правил сохраняет приоритеты исходной логики
+      const RULES = [
+        // Игристое — белое + лёгкое + насыщенная подача (кислота/соль/жир), но без пряностей
+        { when: { color: "white", body: "light", intensity: "bold", aroma: "neutral" }, result: "garganega_verona" },
 
-      if(color==="red"){
-        if(body==="full"){
-          if(aroma==="spicy") return "syrah_shiraz";
-          return "cab_malbec";
-        }
-        // лёгкое красное
-        if(aroma==="spicy") return "cab_franc";
-        return "pinot_noir";
-      }
+        // Красное
+        { when: { color: "red", body: "full", aroma: "spicy" }, result: "syrah_shiraz" },
+        { when: { color: "red", body: "full" }, result: "cab_malbec" },
+        { when: { color: "red", aroma: "spicy" }, result: "cab_franc" },
+        { when: { color: "red" }, result: "pinot_noir" },
 
-      // белое:
-      if(body==="full"){
-        if(intensity==="bold") return "chardonnay_chablis";
-        return (aroma==="spicy") ? "riesling_gewurz" : "garganega_verona";
-      }
+        // Белое, полное
+        { when: { color: "white", body: "full", intensity: "bold" }, result: "chardonnay_chablis" },
+        { when: { color: "white", body: "full", aroma: "spicy" }, result: "riesling_gewurz" },
+        { when: { color: "white", body: "full" }, result: "garganega_verona" },
 
-      // белое лёгкое:
-      if(aroma==="spicy"){
-        if(intensity==="bold") return "riesling_gewurz";
-        return "sauv_blanc";
-      }
+        // Белое, лёгкое
+        { when: { color: "white", body: "light", aroma: "spicy", intensity: "bold" }, result: "riesling_gewurz" },
+        { when: { color: "white", body: "light", aroma: "spicy" }, result: "sauv_blanc" },
+        { when: { color: "white", body: "light", intensity: "delicate" }, result: "garganega_verona" },
+      ];
 
-      if(intensity==="delicate") return "garganega_verona";
-
-      return "garnacha_pinotgrigio";
+      const hit = RULES.find(r => match(r.when));
+      return (hit || { result: "garnacha_pinotgrigio" }).result;
     }
+
 
     // ===== РЕНДЕР =====
     const root = document.getElementById('wine-quiz-root');
