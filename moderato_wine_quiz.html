@@ -14,8 +14,17 @@
     .wrap{max-width:1000px;margin:24px auto;padding:0 16px;}
     #wine-quiz{max-width:880px;margin:24px auto;background:var(--bg);color:var(--ink);
       border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;}
-    .wq-header{padding:28px 28px 8px;border-bottom:1px solid var(--border);
-      background:linear-gradient(180deg,#fff,#fff8f0 160%);}
+    .wq-header {
+      padding:28px 28px 8px;
+      border-bottom:1px solid var(--border);
+      background:#722F37;   /* винный цвет */
+      color:#fff;           /* белый текст */
+    }
+    .wq-header .wq-kicker,
+    .wq-header .wq-title,
+    .wq-header .wq-sub {
+      color:#fff;           /* чтобы заголовок и подзаголовок тоже были белыми */
+    }
     .wq-kicker{text-transform:uppercase;letter-spacing:.12em;font-size:12px;color:var(--muted);margin-bottom:6px;}
     .wq-title{font-size:32px;line-height:1.15;letter-spacing:.02em;margin:0 0 8px 0;}
     .wq-sub{color:var(--muted);font-size:14px;margin:0 0 14px 0;}
