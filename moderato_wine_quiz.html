@@ -267,7 +267,7 @@
       const header=el('div',{className:'wq-header wq-screen'},[
         el('div',{className:'wq-kicker'},'MODERATO — Фудпейринг'),
         el('h2',{className:'wq-title'},'Подберите вино к блюду за 4 шага'),
-        el('p',{className:'wq-sub'},'Цвет → Вес → Кислотность/Насыщенность → Аромат. Настоящий вкус раскрывается только в паре «вино + блюдо».'),
+        el('p',{className:'wq-sub'},'Цвет → Вес → Кислотность/Насыщенность → Аромат.'),
         (()=>{ const bar=el('div',{className:'wq-progress'},[el('span')]);
           requestAnimationFrame(()=>{ bar.firstChild.style.width=progressPct()+'%'; }); return bar;})()
       ]);
@@ -303,10 +303,6 @@
           el('p',{}, r.desc),
           el('div',{className:'wq-tags'}, r.tags.map(t=>el('span',{className:'wq-tag'}, t)))
         ]));
-
-        body.appendChild(el('p',{className:'wq-footnote'},
-          'Подсказка: соотнесите стиль вина с выбранными характеристиками блюда. Настоящий вкус раскрывается в паре «вино + блюдо».'
-        ));
 
         // CTA
         const cta=el('div',{className:'wq-cta'},[
